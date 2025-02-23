@@ -1,10 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
-import HomePage from "../pages/HomePage"
-import ProductPage from "../pages/ProductPage"
-import PricingPage from "../pages/PricingPage"
-import PageNotFound from "../pages/PageNotFound"
+import HomePage from "../pages/home/Homepage"
+import Pricing from "../pages/pricing/Pricing"
+import PageNotFound from "../pages/error/PageNotFound"
 import Layout from "../pages/layout/Layout"
-import App from "../pages/App"
+import AppLayout from "../pages/app/AppLayout"
+import Product from "../pages/product/Product"
+import Login from '../pages/login/Login'
 
 export default function Router() {
     const router = createBrowserRouter([
@@ -18,15 +19,19 @@ export default function Router() {
                 },
                 {
                     path: 'product',
-                    element: <ProductPage />
+                    element: <Product />
                 },
                 {
                     path: 'pricing',
-                    element: <PricingPage />
+                    element: <Pricing />
                 },
                 {
                     path: '/app',
-                    element: <App />
+                    element: <AppLayout />
+                },
+                {
+                    path: '/login',
+                    element: <Login />
                 },
                 {
                     path: '*',
