@@ -6,6 +6,7 @@ import Layout from "../pages/layout/Layout";
 import AppLayout from "../pages/app/AppLayout";
 import Product from "../pages/product/Product";
 import Login from "../pages/login/Login";
+import CityList from "../components/cityList/CityList";
 
 export default function Router() {
     const router = createBrowserRouter([
@@ -35,7 +36,7 @@ export default function Router() {
                         },
                         {
                             path: 'cities',
-                            element: <h1>City List</h1>
+                            element: <CityList/>
                         },
                         {
                             path: 'countries',
