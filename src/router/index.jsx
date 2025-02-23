@@ -7,6 +7,7 @@ import AppLayout from "../pages/app/AppLayout";
 import Product from "../pages/product/Product";
 import Login from "../pages/login/Login";
 import CityList from "../components/cityList/CityList";
+import CountryList from "../components/countryList/CountryList";
 
 export default function Router() {
     const router = createBrowserRouter([
@@ -31,16 +32,16 @@ export default function Router() {
                     element: <AppLayout />,
                     children: [
                         {
-                            index: true, 
+                            index: true,
                             element: <Navigate to="cities" replace />
                         },
                         {
                             path: 'cities',
-                            element: <CityList/>
+                            element: <CityList />
                         },
                         {
                             path: 'countries',
-                            element: <h1>Country List</h1>
+                            element: <CountryList />
                         },
                         {
                             path: 'form',
