@@ -8,6 +8,8 @@ import Product from "../pages/product/Product";
 import Login from "../pages/login/Login";
 import CityList from "../components/cityList/CityList";
 import CountryList from "../components/countryList/CountryList";
+import City from "../components/city/City";
+import Form from '../components/form/Form'
 
 export default function Router() {
     const router = createBrowserRouter([
@@ -40,12 +42,16 @@ export default function Router() {
                             element: <CityList />
                         },
                         {
+                            path: 'cities/:id',
+                            element: <City />
+                        },
+                        {
                             path: 'countries',
                             element: <CountryList />
                         },
                         {
                             path: 'form',
-                            element: <h1>Form</h1>
+                            element: <Form />
                         }
                     ]
                 },
