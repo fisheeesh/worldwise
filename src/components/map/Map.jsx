@@ -1,19 +1,27 @@
-import { useNavigate, useSearchParams } from "react-router-dom"
+import { useSearchParams } from "react-router-dom"
 import styles from "./Map.module.css"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import useApp from '../../hooks/useApp'
+import ChangeCenter from "./ChangeCenter"
+import DetectClick from "./DetectClick"
 
 export default function Map() {
-    const [searchParams, setSearchParms] = useSearchParams()
-    const navigate = useNavigate()
+    const [searchParams] = useSearchParams()
     const [mapPosition, setMapPosition] = useState([40, 0])
+
+    const mapLat = searchParams.get('lat')
+    const mapLng = searchParams.get('lng')
 
     const { cities } = useApp()
 
+    useEffect(() => {
+        if (mapLat, mapLng) setMapPosition([mapLat, mapLng])
+    }, [mapLat, mapLng])
+
     return (
         <div className={styles.mapContainer}>
-            <MapContainer center={mapPosition} zoom={13} scrollWheelZoom={true} className={styles.map}>
+            <MapContainer center={mapPosition} zoom={6} scrollWheelZoom={true} className={styles.map}>
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
@@ -26,6 +34,8 @@ export default function Map() {
                         </Popup>
                     </Marker>
                 ))}
+                <ChangeCenter position={mapPosition} />
+                <DetectClick />
             </MapContainer>
         </div>
     )
