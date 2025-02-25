@@ -35,7 +35,7 @@ export default function Router() {
                     children: [
                         {
                             index: true,
-                            element: <Navigate to="cities" replace />
+                            element: <Navigate to='cities' replace />
                         },
                         {
                             path: 'cities',
