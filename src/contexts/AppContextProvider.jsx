@@ -53,6 +53,7 @@ export default function AppContextProvider({ children }) {
     }, [])
 
     const getCurrentCity = async (id) => {
+        if (Number(id) === currentCity.id) return
         dispatch({ type: 'loading' })
         try {
             let { data } = await axios.get(`${BASE_URL}/cities/${id}`)
