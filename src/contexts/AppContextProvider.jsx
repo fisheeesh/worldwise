@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
 import axios from "axios"
-import { createContext, useEffect, useReducer } from "react"
+import { createContext, useCallback, useEffect, useReducer } from "react"
 
 export const AppContext = createContext()
 
@@ -52,18 +52,22 @@ export default function AppContextProvider({ children }) {
         fetchCities()
     }, [])
 
-    const getCurrentCity = async (id) => {
-        if (Number(id) === currentCity.id) return
-        dispatch({ type: 'loading' })
-        try {
-            let { data } = await axios.get(`${BASE_URL}/cities/${id}`)
-            dispatch({ type: 'city/loaded', payload: data })
+    const getCurrentCity = useCallback((id) => {
+        const fetchCity = async () => {
+            if (Number(id) === currentCity.id) return
+            dispatch({ type: 'loading' })
+            try {
+                let { data } = await axios.get(`${BASE_URL}/cities/${id}`)
+                dispatch({ type: 'city/loaded', payload: data })
+            }
+            catch (err) {
+                console.log('Error Fetching: ', err.message)
+                dispatch({ type: 'rejected', payload: err.message })
+            }
         }
-        catch (err) {
-            console.log('Error Fetching: ', err.message)
-            dispatch({ type: 'rejected', payload: err.message })
-        }
-    }
+
+        fetchCity()
+    }, [currentCity.id])
 
     const createCity = async (newCity) => {
         dispatch({ type: 'loading' })
