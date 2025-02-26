@@ -1,29 +1,14 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
 import axios from "axios"
-import { createContext, useEffect, useReducer, useState } from "react"
+import { createContext, useEffect, useState } from "react"
 
 export const AppContext = createContext()
 
 const BASE_URL = import.meta.env.VITE_FAKE_API
 
-const initialState = {
-    cities: []
-}
-
-const appReducer = (state, action) => {
-    switch (action.type) {
-        case "FETCH_CITIES":
-            return { ...state, cities: action.payload, }
-        case "FETCH_CITIES_ERROR":
-            return { ...state, }
-        default:
-            return state
-    }
-}
-
 export default function AppContextProvider({ children }) {
-    const [{ cities }, dispatch] = useReducer(appReducer, initialState)
+    const [cities, setCities] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [currentCity, setCurrentCity] = useState({})
 
@@ -33,11 +18,11 @@ export default function AppContextProvider({ children }) {
                 setIsLoading(true)
                 await new Promise(resolve => setTimeout(resolve, 500))
                 let res = await axios.get(`${BASE_URL}/cities`)
-                dispatch({ type: "FETCH_CITIES", payload: res.data })
+                setCities(res.data)
             }
             catch (err) {
                 console.log(err.message)
-                dispatch({ type: "FETCH_CITIES_ERROR" })
+                setCities([])
             }
             finally {
                 setIsLoading(false)
@@ -54,15 +39,15 @@ export default function AppContextProvider({ children }) {
         }
         catch (err) {
             console.log('Error Fetching: ', err.message)
-        }        
+        }
         finally {
             setIsLoading(false)
         }
-        
+
     }
 
     return (
-        <AppContext.Provider value={{ cities, isLoading, dispatch, getCurrentCity, setCurrentCity, currentCity }}>
+        <AppContext.Provider value={{ cities, isLoading, getCurrentCity, setCurrentCity, currentCity }}>
             {children}
         </AppContext.Provider>
     )

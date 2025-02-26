@@ -1,5 +1,5 @@
 const helpers = () => {
-    
+
     const formatDate = (date) =>
         new Intl.DateTimeFormat("en", {
             day: "numeric",
@@ -7,7 +7,15 @@ const helpers = () => {
             year: "numeric",
         }).format(new Date(date));
 
-    return { formatDate }
+    const convertToEmoji = (countryCode) => {
+        const codePoints = countryCode
+            .toUpperCase()
+            .split("")
+            .map((char) => 127397 + char.charCodeAt());
+        return String.fromCodePoint(...codePoints);
+    }
+
+    return { formatDate, convertToEmoji }
 }
 
 export default helpers
