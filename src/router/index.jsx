@@ -12,6 +12,7 @@ import City from "../components/city/City";
 import Form from '../components/form/Form'
 
 export default function Router() {
+
     const router = createBrowserRouter([
         {
             path: '/',
