@@ -10,8 +10,10 @@ import CityList from "../components/cityList/CityList";
 import CountryList from "../components/countryList/CountryList";
 import City from "../components/city/City";
 import Form from '../components/form/Form'
+import useFakeAuth from "../hooks/useFakeAuth";
 
 export default function Router() {
+    const { isAuthenticated } = useFakeAuth()
 
     const router = createBrowserRouter([
         {
@@ -32,7 +34,7 @@ export default function Router() {
                 },
                 {
                     path: 'app',
-                    element: <AppLayout />,
+                    element: isAuthenticated ? <AppLayout /> : <Navigate to='/login' />,
                     children: [
                         {
                             index: true,
@@ -58,7 +60,7 @@ export default function Router() {
                 },
                 {
                     path: 'login',
-                    element: <Login />
+                    element: !isAuthenticated ? <Login /> : <Navigate to='/app' />
                 },
                 {
                     path: '*',
