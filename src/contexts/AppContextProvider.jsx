@@ -59,8 +59,22 @@ export default function AppContextProvider({ children }) {
         }
     }
 
+    const deleteCity = async (cityId) => {
+        try {
+            setIsLoading(true)
+            await axios.delete(`${BASE_URL}/cities/${cityId}`)
+            setCities(prevState => prevState.filter(city => city.id !== cityId))
+        }
+        catch (err) {
+            console.log(err.message)
+        }
+        finally {
+            setIsLoading(false)
+        }
+    }
+
     return (
-        <AppContext.Provider value={{ cities, isLoading, getCurrentCity, setCurrentCity, currentCity, createCity }}>
+        <AppContext.Provider value={{ cities, isLoading, getCurrentCity, setCurrentCity, currentCity, createCity, deleteCity }}>
             {children}
         </AppContext.Provider>
     )

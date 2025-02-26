@@ -7,15 +7,21 @@ import useApp from '../../hooks/useApp'
 const { formatDate } = helpers()
 
 export default function CityItem({ city }) {
-    const { currentCity } = useApp()
+    const { currentCity, deleteCity } = useApp()
     const { cityName, emoji, date, id, position } = city
+
+    const handleDelete = async (e, id) => {
+        e.preventDefault()
+        await deleteCity(id)
+    }
+
     return (
         <div>
             <Link to={`${id}?lat=${position.lat}&lng=${position.lng}`} className={`${styles.cityItem} ${currentCity.id === id && styles['cityItem--active']}`}>
                 <span className={styles.emoji}>{emoji}</span>
                 <h3 className={styles.name}>{cityName}</h3>
                 <time className={styles.date}>({formatDate(date)})</time>
-                <button className={styles.deleteBtn}>&times;</button>
+                <button onClick={(e) => handleDelete(e, id)} className={styles.deleteBtn}>&times;</button>
             </Link>
         </div>
     )
