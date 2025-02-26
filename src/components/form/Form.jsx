@@ -7,10 +7,14 @@ import { useURLPosition } from "../../hooks/useURLPositions";
 import Spinner from '../spinner/Spinner'
 import Message from '../message/Message'
 import BackButton from "../button/BackButton";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import useApp from '../../hooks/useApp'
+import { useNavigate } from "react-router-dom";
 
 const initialState = {
   cityName: '',
-  countryCode: '',
+  country: '',
   date: new Date(),
   notes: '',
   error: '',
@@ -25,7 +29,7 @@ const formReducer = (state, action) => {
     case "SET_NOTES":
       return { ...state, notes: action.payload }
     case "GET_COUNTRY_DATA":
-      return { ...state, cityName: action.payload.city, countryCode: action.payload.countryCode, error: '' }
+      return { ...state, cityName: action.payload.city, country: action.payload.countryName, error: '' }
     case "ERROR":
       return { ...state, error: action.payload }
     default:
@@ -34,16 +38,19 @@ const formReducer = (state, action) => {
 }
 
 function Form() {
-  const { formatDate, convertToEmoji } = helpers()
-  const [isLoading, setIsLoading] = useState(false)
-  const [{ cityName, countryCode, date, notes, error }, dispatch] = useReducer(formReducer, initialState)
+  const { createCity, isLoading: formLoading } = useApp()
   const { lat, lng } = useURLPosition()
+  const { convertToEmoji } = helpers()
+  const navigate = useNavigate()
+  const [{ cityName, country, date, notes, error }, dispatch] = useReducer(formReducer, initialState)
+  const [isLoading, setIsLoading] = useState(false)
+  const [emoji, setEmoji] = useState('')
 
   const setCity = (e) => {
     dispatch({ type: "SET_CITY_NAME", payload: e.target.value })
   }
-  const setDate = (e) => {
-    dispatch({ type: "SET_DATE", payload: e.target.value })
+  const setDate = (date) => {
+    dispatch({ type: "SET_DATE", payload: date })
   }
 
   const setNotes = (e) => {
@@ -51,11 +58,14 @@ function Form() {
   }
 
   useEffect(() => {
+    if (!lat && !lng) return
+
     const fetchDetail = async () => {
       try {
         setIsLoading(true)
         let { data } = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`)
         dispatch({ type: 'GET_COUNTRY_DATA', payload: data })
+        setEmoji(convertToEmoji(data.countryCode))
         if (!data.countryCode) throw new Error("That doesn't seem to be a city. Click somewhere else on the map 😉.")
       }
       catch (err) {
@@ -68,12 +78,29 @@ function Form() {
     fetchDetail()
   }, [lat, lng])
 
+  const onHandleSubmit = async(e) => {
+    e.preventDefault()
+    if (!cityName || !date) return
+
+    const newCity = {
+      cityName,
+      country,
+      emoji,
+      date,
+      position: { lat, lng }
+    }
+
+    await createCity(newCity)
+    navigate('/app')
+  }
+
 
   if (isLoading) return <Spinner />
   if (error) return <Message message={error} />
+  if (!lat && !lng) return <Message message={"Start by clicking somewhere on the map"} />
 
   return (
-    <form className={styles.form}>
+    <form className={`${styles.form} ${formLoading ? styles.loading : ''}`} onSubmit={onHandleSubmit}>
       <div className={styles.row}>
         <label htmlFor="cityName">City name</label>
         <input
@@ -81,16 +108,17 @@ function Form() {
           onChange={(e) => setCity(e)}
           value={cityName}
         />
-        <span className={styles.flag}>{convertToEmoji(countryCode)}</span>
+        <span className={styles.flag}>{emoji}</span>
       </div>
 
       <div className={styles.row}>
         <label htmlFor="date">When did you go to {cityName}?</label>
-        <input
+        {/* <input
           id="date"
           onChange={(e) => setDate(e)}
           value={formatDate(date)}
-        />
+        /> */}
+        <DatePicker id='date' onChange={date => setDate(date)} selected={date} dateFormat={'dd/MM/yyyy'} />
       </div>
 
       <div className={styles.row}>

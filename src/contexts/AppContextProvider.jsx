@@ -43,11 +43,24 @@ export default function AppContextProvider({ children }) {
         finally {
             setIsLoading(false)
         }
+    }
 
+    const createCity = async (newCity) => {
+        try {
+            setIsLoading(true)
+            let { data } = await axios.post(`${BASE_URL}/cities`, newCity)
+            setCities(prevState => [...prevState, data])
+        }
+        catch (err) {
+            console.log(err.message)
+        }
+        finally {
+            setIsLoading(false)
+        }
     }
 
     return (
-        <AppContext.Provider value={{ cities, isLoading, getCurrentCity, setCurrentCity, currentCity }}>
+        <AppContext.Provider value={{ cities, isLoading, getCurrentCity, setCurrentCity, currentCity, createCity }}>
             {children}
         </AppContext.Provider>
     )
