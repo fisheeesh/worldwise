@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer } from "react";
 import styles from "./Form.module.css";
 import Button from "../button/Button";
 import helpers from "../../utils/helpers";
@@ -18,10 +18,14 @@ const initialState = {
   date: new Date(),
   notes: '',
   error: '',
+  loading: false,
+  emoji: ''
 }
 
 const formReducer = (state, action) => {
   switch (action.type) {
+    case "LOADING":
+      return { ...state, loading: true }
     case "SET_CITY_NAME":
       return { ...state, cityName: action.payload }
     case "SET_DATE":
@@ -29,9 +33,9 @@ const formReducer = (state, action) => {
     case "SET_NOTES":
       return { ...state, notes: action.payload }
     case "GET_COUNTRY_DATA":
-      return { ...state, cityName: action.payload.city, country: action.payload.countryName, error: '' }
+      return { ...state, cityName: action.payload.city, country: action.payload.countryName, error: '', emoji: action.payload.countryCode, loading: false }
     case "ERROR":
-      return { ...state, error: action.payload }
+      return { ...state, error: action.payload, loading: false }
     default:
       return state
   }
@@ -42,9 +46,8 @@ function Form() {
   const { lat, lng } = useURLPosition()
   const { convertToEmoji } = helpers()
   const navigate = useNavigate()
-  const [{ cityName, country, date, notes, error }, dispatch] = useReducer(formReducer, initialState)
-  const [isLoading, setIsLoading] = useState(false)
-  const [emoji, setEmoji] = useState('')
+
+  const [{ cityName, country, date, notes, error, loading, emoji }, dispatch] = useReducer(formReducer, initialState)
 
   const setCity = (e) => {
     dispatch({ type: "SET_CITY_NAME", payload: e.target.value })
@@ -61,31 +64,29 @@ function Form() {
     if (!lat && !lng) return
 
     const fetchDetail = async () => {
+      dispatch({ type: 'LOADING' })
       try {
-        setIsLoading(true)
         let { data } = await axios.get(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}`)
         dispatch({ type: 'GET_COUNTRY_DATA', payload: data })
-        setEmoji(convertToEmoji(data.countryCode))
         if (!data.countryCode) throw new Error("That doesn't seem to be a city. Click somewhere else on the map 😉.")
       }
       catch (err) {
         dispatch({ type: 'ERROR', payload: err.message })
       }
-      finally {
-        setIsLoading(false)
-      }
     }
     fetchDetail()
   }, [lat, lng])
 
-  const onHandleSubmit = async(e) => {
+  const onHandleSubmit = async (e) => {
     e.preventDefault()
     if (!cityName || !date) return
+
+    const flag = convertToEmoji(emoji)
 
     const newCity = {
       cityName,
       country,
-      emoji,
+      emoji: flag,
       date,
       position: { lat, lng }
     }
@@ -95,7 +96,7 @@ function Form() {
   }
 
 
-  if (isLoading) return <Spinner />
+  if (loading) return <Spinner />
   if (error) return <Message message={error} />
   if (!lat && !lng) return <Message message={"Start by clicking somewhere on the map"} />
 
@@ -108,7 +109,7 @@ function Form() {
           onChange={(e) => setCity(e)}
           value={cityName}
         />
-        <span className={styles.flag}>{emoji}</span>
+        <span className={styles.flag}>{convertToEmoji(emoji)}</span>
       </div>
 
       <div className={styles.row}>
