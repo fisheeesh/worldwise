@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const useGeoLocation = (defaultPosition = null) => {
     const [isLoading, setIsLoading] = useState(false);
     const [position, setPosition] = useState(defaultPosition);
     const [error, setError] = useState(null);
+    const navigate = useNavigate()
 
     function getPosition() {
         if (!navigator.geolocation)
@@ -17,12 +19,15 @@ const useGeoLocation = (defaultPosition = null) => {
                     lng: pos.coords.longitude
                 });
                 setIsLoading(false);
+                navigate(`/app/form?lat=${pos.coords.latitude}&lng=${pos.coords.longitude}`)
             },
             (error) => {
                 setError(error.message);
                 setIsLoading(false);
             }
         );
+
+
     }
 
     return { isLoading, position, error, getPosition };
