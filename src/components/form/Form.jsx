@@ -85,6 +85,7 @@ function Form() {
 
     const newCity = {
       id: Date.now().toString(),
+      notes,
       cityName,
       country,
       emoji: flag,
