@@ -84,6 +84,7 @@ function Form() {
     const flag = convertToEmoji(emoji)
 
     const newCity = {
+      id: Date.now().toString(),
       cityName,
       country,
       emoji: flag,

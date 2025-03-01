@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./City.module.css";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import useApp from '../../hooks/useApp'
 import helpers from "../../utils/helpers";
 import Spinner from "../spinner/Spinner";
@@ -8,14 +8,16 @@ import Button from "../button/Button";
 
 function City() {
   const { id } = useParams()
-  const { currentCity, getCurrentCity, isLoading } = useApp()
+  const { cities, isLoading } = useApp()
   const { formatDate } = helpers()
   const navigate = useNavigate()
 
-  useEffect(() => {
-    getCurrentCity(id)
-  }, [id, getCurrentCity])
+  // const { currentCity, getCurrentCity, isLoading } = useApp()
+  // useEffect(() => {
+  //   getCurrentCity(id)
+  // }, [id, getCurrentCity])
 
+  const currentCity = cities.find(city => city.id === id)
   const { cityName, date, emoji, notes } = currentCity
 
   if (isLoading) return <Spinner />
