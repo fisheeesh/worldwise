@@ -29,7 +29,3 @@ All users share the same data as a single account.
 ## 🔗 Live Demo
 
 Play around it here - https://worldwise-pearl-ten.vercel.app
-
-## 📂 GitHub
-
-You can find the source code and the initial **JSON-Server** setup in the **repo**.
